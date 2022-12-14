@@ -88,11 +88,15 @@ type KeyPair struct {
 type PEMEncodedCertificateAndKey struct {
 	Crt []byte `json:"Crt"`
 	Key []byte `json:"Key"`
+
+	KeyYAMLOverride string
 }
 
 // PEMEncodedKey represents a PEM encoded private key.
 type PEMEncodedKey struct {
 	Key []byte `json:"Key"`
+
+	KeyYAMLOverride string
 }
 
 // Options is the functional options struct.
@@ -811,7 +815,12 @@ func (p *PEMEncodedCertificateAndKey) MarshalYAML() (interface{}, error) {
 	}
 
 	aux.Crt = base64.StdEncoding.EncodeToString(p.Crt)
-	aux.Key = base64.StdEncoding.EncodeToString(p.Key)
+
+	if p.KeyYAMLOverride != "" {
+		aux.Key = p.KeyYAMLOverride
+	} else {
+		aux.Key = base64.StdEncoding.EncodeToString(p.Key)
+	}
 
 	return aux, nil
 }
@@ -958,7 +967,11 @@ func (p *PEMEncodedKey) MarshalYAML() (interface{}, error) {
 		Key string `yaml:"key"`
 	}
 
-	aux.Key = base64.StdEncoding.EncodeToString(p.Key)
+	if p.KeyYAMLOverride != "" {
+		aux.Key = p.KeyYAMLOverride
+	} else {
+		aux.Key = base64.StdEncoding.EncodeToString(p.Key)
+	}
 
 	return aux, nil
 }
